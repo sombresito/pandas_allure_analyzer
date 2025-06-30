@@ -108,7 +108,7 @@ def analyze_and_post(uuid: str, team_name: str, report_data):
         ) from e
 
     summary_text = format_report_summary(report_data)
-    combined_text = summary_text + "\n\n" + analysis_text
+    combined_text = summary_text + "<br/><br/>" + analysis_text
 
     # Формируем полезную нагрузку по спецификации
     payload = [
