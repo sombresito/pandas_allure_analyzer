@@ -67,7 +67,7 @@ async def analyze_report(request: Request):
 
     # 5. Анализ и отправка результата
     try:
-        analyze_and_post(uuid, team_name)
+        analyze_and_post(uuid, team_name, report_data)
         logger.info("Analysis posted for %s", uuid)
     except Exception as e:
         logger.error("Analysis failed for %s: %s", uuid, e)
