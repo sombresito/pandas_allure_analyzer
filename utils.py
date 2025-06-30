@@ -3,6 +3,7 @@ import logging
 from fastapi import HTTPException
 from pandas_chunking import chunk_json_to_jsonl
 from rag_pipeline import run_rag_analysis, RagAnalysisError
+from report_summary import format_report_summary
 import requests
 import unicodedata
 import re
@@ -86,7 +87,7 @@ def chunk_and_save_json(json_data, uuid, team_name):
     return output_path, df
 
 
-def analyze_and_post(uuid: str, team_name: str):
+def analyze_and_post(uuid: str, team_name: str, report_data):
     """
     Выполняет RAG-анализ и отправляет результат на Allure-сервер.
 
@@ -106,11 +107,14 @@ def analyze_and_post(uuid: str, team_name: str):
             detail=f"Qdrant service is unreachable: {e}"
         ) from e
 
+    summary_text = format_report_summary(report_data)
+    combined_text = summary_text + "\n\n" + analysis_text
+
     # Формируем полезную нагрузку по спецификации
     payload = [
         {
             "rule": "auto-analysis",
-            "message": analysis_text
+            "message": combined_text
         }
     ]
 
