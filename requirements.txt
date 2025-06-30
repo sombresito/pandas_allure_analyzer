@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pandas
+requests
+python-dotenv
+sentence-transformers
+qdrant-client
+numpy
+pytest

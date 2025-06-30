@@ -1,0 +1,8 @@
+local_models/
+venv/
+reports/
+.env
+__pycache__/
+chunks/
+qdrant_storage/
+ollama/

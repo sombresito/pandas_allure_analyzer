@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: zhumakom/allure_analyzer:latest
+    ports:
+      - "5005:5005"
+    depends_on:
+      - qdrant
+      - ollama
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - OLLAMA_URL=http://ollama:11434/api/generate
+    networks:
+      - allure_analyzer_network
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6334:6333"
+    # монтируем локальную папку qdrant_storage в контейнер
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+    networks:
+      - allure_analyzer_network
+    restart: unless-stopped
+
+  ollama:
+    image: zhumakom/ollama-mistral
+    command: ["serve"]
+    environment:
+      - OLLAMA_HOST=http://0.0.0.0:11434
+    ports:
+      - "11435:11434"
+    volumes:
+      - ./ollama/mistral_model/mistral:/root/.ollama/models/mistral:ro
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+    networks:
+      - allure_analyzer_network
+    restart: unless-stopped
+
+networks:
+  allure_analyzer_network:
+    name: allure_analyzer_network
