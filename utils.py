@@ -31,7 +31,7 @@ def _auth_kwargs():
 
     return {}
 
-def extract_test_suite(report_json):
+def extract_test_suite_name(report_json):
     """
     Извлекает название команды из JSON-отчёта:
     сначала пытается взять метку parentSuite,
@@ -68,12 +68,12 @@ def extract_test_suite(report_json):
     return name
 
 
-def chunk_and_save_json(json_data, uuid, test_suite):
+def chunk_and_save_json(json_data, uuid, test_suite_name):
     """
-    Разбивает JSON-отчёт на чанки, сохраняет в <chunks>/<test_suite>/<uuid>.jsonl
+    Разбивает JSON-отчёт на чанки, сохраняет в <chunks>/<test_suite_name>/<uuid>.jsonl
     и удаляет старые файлы, оставляя не более 3.
     """
-    base_dir = os.path.join("chunks", test_suite)
+    base_dir = os.path.join("chunks", test_suite_name)
     os.makedirs(base_dir, exist_ok=True)
 
     output_path = os.path.join(base_dir, f"{uuid}.jsonl")
@@ -88,7 +88,7 @@ def chunk_and_save_json(json_data, uuid, test_suite):
     return output_path, df
 
 
-def analyze_and_post(uuid: str, test_suite: str, report_data):
+def analyze_and_post(uuid: str, test_suite_name: str, report_data):
     """
     Выполняет RAG-анализ и отправляет результат на Allure-сервер.
 
@@ -99,7 +99,7 @@ def analyze_and_post(uuid: str, test_suite: str, report_data):
     """
     # 1. Генерируем анализ
     try:
-        analysis_result = run_rag_analysis(test_suite)
+        analysis_result = run_rag_analysis(test_suite_name)
         analysis_text = analysis_result.get("analysis", "")
     except RagAnalysisError as e:
         logger.error("RAG analysis failed for %s: %s", uuid, e)

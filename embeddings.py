@@ -61,15 +61,15 @@ def create_embeddings(df: pd.DataFrame, model_path: str = MODEL_PATH) -> np.ndar
 
 def save_embeddings(
     embeddings: np.ndarray,
-    test_suite: str,
+    test_suite_name: str,
     report_uuid: str,
     base_dir: str | os.PathLike = EMBEDDINGS_DIR,
 ) -> Path:
-    """Save ``embeddings`` for ``test_suite``/``report_uuid`` and clean up old files.
+    """Save ``embeddings`` for ``test_suite_name``/``report_uuid`` and clean up old files.
 
     Returns the path where the embeddings were written.
     """
-    dir_path = Path(base_dir) / test_suite
+    dir_path = Path(base_dir) / test_suite_name
     dir_path.mkdir(parents=True, exist_ok=True)
     file_path = dir_path / f"{report_uuid}.npy"
     np.save(file_path, embeddings)

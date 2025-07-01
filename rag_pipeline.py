@@ -118,11 +118,11 @@ def generate_answer_with_ollama(chunks, question, ollama_url: str = OLLAMA_URL):
     return answer.strip()
 
 
-def run_rag_analysis(test_suite: str) -> dict:
+def run_rag_analysis(test_suite_name: str) -> dict:
     """Generate a short analysis for a team's latest report using RAG."""
     client = get_client()
     search_filter = Filter(
-        must=[FieldCondition(key="team", match=MatchValue(value=test_suite))]
+        must=[FieldCondition(key="team", match=MatchValue(value=test_suite_name))]
     )
     try:
         points, _ = client.scroll(
@@ -138,7 +138,7 @@ def run_rag_analysis(test_suite: str) -> dict:
 
     question = "Проанализируй текущий отчёт (выводы, обратная связь, рекомендации), а затем сравни с двумя предыдущими и укажи тренд."
     answer = generate_answer_with_ollama(chunks, question) if chunks else ""
-    return {"team": test_suite, "analysis": answer}
+    return {"team": test_suite_name, "analysis": answer}
 
 
 # ==== Основная функция ====
