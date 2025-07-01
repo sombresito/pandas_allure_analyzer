@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     df = load_chunks(CHUNKS_PATH)
     first_row = df.iloc[0]
-    team = first_row["parentSuite"]
+    team = first_row.get("parentSuite") or first_row.get("suite")
     report_uuid = first_row["report_uuid"]
 
     emb_path = os.path.join(EMBEDDINGS_DIR, team, f"{report_uuid}.npy")
