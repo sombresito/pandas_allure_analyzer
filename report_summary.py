@@ -44,12 +44,20 @@ def extract_report_info(report: List[Dict[str, Any]], fallback_timestamp: int = 
             earliest = min(earliest or ts_fallback, ts_fallback)
 
         # labels → team & initiators
+        suite_name = None
+        fallback_suite = None
         for lbl in case.get("labels", []):
             name, val = lbl.get("name"), lbl.get("value")
-            if name == "parentSuite" and val:
-                test_suite_names.add(val)
+            if name == "parentSuite" and val and suite_name is None:
+                suite_name = val
+            if name == "suite" and val and fallback_suite is None:
+                fallback_suite = val
             if name in {"owner", "user", "initiator"} and val:
                 initiators.add(val)
+        if suite_name is None:
+            suite_name = fallback_suite
+        if suite_name:
+            test_suite_names.add(suite_name)
 
         # status counts
         status = (case.get("status") or "").lower()
