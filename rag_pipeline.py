@@ -25,7 +25,7 @@ QDRANT_TIMEOUT = int(os.getenv("QDRANT_TIMEOUT", "10"))
 COLLECTION_NAME = "allure_chunks"
 # URL for the Ollama API can be overridden by environment variable
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434/api/generate")
-OLLAMA_MODEL = "mistral"
+OLLAMA_MODEL = "mistral:latest"
 
 
 # ==== Инициализация ====

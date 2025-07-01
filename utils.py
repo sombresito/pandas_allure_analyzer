@@ -7,12 +7,13 @@ from report_summary import format_report_summary
 import requests
 import unicodedata
 import re
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
 # Базовый URL Allure API, по умолчанию взят из переменной окружения
-ALLURE_API = os.getenv("ALLURE_API", "http://10.15.132.171:8080/api")
-
+ALLURE_API = os.getenv("ALLURE_API", "https://Allure-Report-BCC-QA.bank.corp.centercredit.kz:9443/api")
 
 def _auth_kwargs():
     """
@@ -122,7 +123,7 @@ def analyze_and_post(uuid: str, team_name: str, report_data):
     url = f"{ALLURE_API}/analysis/report/{uuid}"
     auth_kwargs = _auth_kwargs()
     try:
-        resp = requests.post(url, json=payload, timeout=10, **auth_kwargs)
+        resp = requests.post(url, json=payload, verify=False, timeout=10, **auth_kwargs)
     except requests.RequestException as e:
         logger.error("Failed to post analysis for %s: %s", uuid, e)
         raise HTTPException(

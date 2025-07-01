@@ -142,4 +142,4 @@ def format_report_summary(
     else:
         lines.append("**\u0414\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u044b**: нет")
 
-    return "\n".join(lines)
+    return "<br>".join(lines)

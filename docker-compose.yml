@@ -37,9 +37,6 @@ services:
       - OLLAMA_HOST=http://0.0.0.0:11434
     ports:
       - "11435:11434"
-    volumes:
-      - ./ollama/mistral_model/mistral:/root/.ollama/models/mistral:ro
-      - /etc/ssl/certs:/etc/ssl/certs:ro
     networks:
       - allure_analyzer_network
     restart: unless-stopped

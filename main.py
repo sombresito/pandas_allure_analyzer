@@ -3,6 +3,9 @@ import requests
 import os
 import logging
 from dotenv import load_dotenv
+import urllib3
+# Отключаем предупреждения InsecureRequestWarning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # LOG_LEVEL is read before loading the .env file to match previous behaviour
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -34,14 +37,29 @@ async def analyze_report(request: Request):
     url = f"{ALLURE_API}/report/{uuid}/test-cases/aggregate"
     auth_kwargs = _auth_kwargs()
     try:
-        resp = requests.get(url, timeout=10, **auth_kwargs)
+        resp = requests.get(url, verify=False, timeout=10, **auth_kwargs)
         resp.raise_for_status()
         logger.info("Fetched report data from Allure")
     except requests.RequestException as e:
         logger.error("Failed to fetch report for %s: %s", uuid, e)
         raise HTTPException(status_code=500, detail=f"Failed to fetch report: {e}") from e
 
-    report_data = resp.json()
+    print(resp.status_code)
+    print(repr(resp.text))
+    
+    try:
+        report_data = resp.json()
+    except ValueError as e:
+        # сохраняем в файл для последующего анализа
+        bad_path = f"/tmp/{uuid}_invalid_allure_response.txt"
+        with open(bad_path, "w", encoding="utf-8") as f:
+            f.write(resp.text)
+        logger.error("Invalid JSON received for %s, saved raw response to %s", uuid, bad_path)
+        # пробрасываем понятную HTTP-ошибку
+        raise HTTPException(
+            status_code=502,
+            detail=f"Invalid JSON received from Allure (see {bad_path})"
+        )
 
     # 2. Получаем название команды
     team_name = extract_team_name(report_data)
