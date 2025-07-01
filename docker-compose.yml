@@ -6,6 +6,13 @@ services:
     image: zhumakom/allure_analyzer:latest
     ports:
       - "5005:5005"
+    volumes:
+      - ./chunks:/app/chunks
+      - ./logs:/app/logs
+      - ./input:/app/input
+      - ./output:/app/output
+      - ./tmp :/app/tmp
+      - ./embeddings:/app/embeddings
     depends_on:
       - qdrant
       - ollama
