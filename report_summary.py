@@ -27,7 +27,7 @@ def _normalize_timestamp(ts: float) -> int:
 
 def extract_report_info(report: List[Dict[str, Any]], fallback_timestamp: int = 0) -> Dict[str, Any]:
     earliest = None
-    team_names = set()
+    test_suites = set()
     status_counts = Counter()
     initiators = set()
     jira_links = set()
@@ -47,7 +47,7 @@ def extract_report_info(report: List[Dict[str, Any]], fallback_timestamp: int = 
         for lbl in case.get("labels", []):
             name, val = lbl.get("name"), lbl.get("value")
             if name == "parentSuite" and val:
-                team_names.add(val)
+                test_suites.add(val)
             if name in {"owner", "user", "initiator"} and val:
                 initiators.add(val)
 
@@ -83,16 +83,16 @@ def extract_report_info(report: List[Dict[str, Any]], fallback_timestamp: int = 
     timestamp = _normalize_timestamp(earliest)
 
     # pick a single team name (or join them)
-    if len(team_names) == 1:
-        team_name = next(iter(team_names))
-    elif team_names:
-        team_name = "_".join(sorted(team_names))
+    if len(test_suites) == 1:
+        test_suite = next(iter(test_suites))
+    elif test_suites:
+        test_suite = "_".join(sorted(test_suites))
     else:
-        team_name = ""
+        test_suite = ""
 
     return {
         "timestamp": timestamp,
-        "team_name": team_name,
+        "test_suite": test_suite,
         "status_counts": {s: status_counts.get(s, 0) for s in STATUS_ORDER},
         "initiators": sorted(initiators),
         "jira_links": sorted(jira_links),
@@ -127,8 +127,8 @@ def format_report_summary(
     lines = [f"**{date_str}**:"]
     lines.extend(status_lines)
 
-    if info["team_name"]:
-        lines.append(f"**\u041a\u043e\u043c\u0430\u043d\u0434\u0430**: {info['team_name']}")
+    if info["test_suite"]:
+        lines.append(f"**\u041a\u043e\u043c\u0430\u043d\u0434\u0430**: {info['test_suite']}")
 
     initiators = ", ".join(info["initiators"]) or "нет"
     lines.append(f"**\u0418\u043d\u0438\u0446\u0438\u0430\u0442\u043e\u0440\u044b**: {initiators}")

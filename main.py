@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 from utils import (
-    extract_team_name,
+    extract_test_suite,
     chunk_and_save_json,
     analyze_and_post,
     _auth_kwargs,
@@ -62,14 +62,14 @@ async def analyze_report(request: Request):
         )
 
     # 2. Получаем название команды
-    team_name = extract_team_name(report_data)
-    if not team_name:
+    test_suite = extract_test_suite(report_data)
+    if not test_suite:
         logger.error("Team name not found in report %s", uuid)
         raise HTTPException(status_code=400, detail="Team name (parentSuite) not found.")
-    logger.info("Team name extracted: %s", team_name)
+    logger.info("Team name extracted: %s", test_suite)
 
     # 3. Чанкуем и сохраняем
-    json_path, df = chunk_and_save_json(report_data, uuid, team_name)
+    json_path, df = chunk_and_save_json(report_data, uuid, test_suite)
     logger.info("Chunks saved for %s", uuid)
 
     # 4. Генерация и загрузка эмбеддингов
@@ -77,7 +77,7 @@ async def analyze_report(request: Request):
         if df is None:
             df = load_chunks(json_path)
         embeddings = create_embeddings(df)
-        upload_embeddings(df, embeddings, team_name, uuid)
+        upload_embeddings(df, embeddings, test_suite, uuid)
         logger.info("Embeddings uploaded for %s", uuid)
     except Exception as e:
         logger.error("Failed to upload embeddings for %s: %s", uuid, e)
@@ -85,10 +85,10 @@ async def analyze_report(request: Request):
 
     # 5. Анализ и отправка результата
     try:
-        analyze_and_post(uuid, team_name, report_data)
+        analyze_and_post(uuid, test_suite, report_data)
         logger.info("Analysis posted for %s", uuid)
     except Exception as e:
         logger.error("Analysis failed for %s: %s", uuid, e)
         return {"result": "partial", "error": str(e)}
 
-    return {"result": "ok", "team": team_name}
+    return {"result": "ok", "team": test_suite}
