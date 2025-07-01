@@ -86,7 +86,7 @@ if __name__ == "__main__":
     logger.info("Generated embeddings: %s", embeddings.shape)
 
     first_row = df.iloc[0]
-    team = first_row["parentSuite"]
+    team = first_row.get("parentSuite") or first_row.get("suite")
     report_uuid = first_row["report_uuid"]
     path = save_embeddings(embeddings, team, report_uuid)
     logger.info("Embeddings saved to %s", path)
