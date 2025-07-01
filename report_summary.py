@@ -111,16 +111,21 @@ def format_report_summary(
     color: bool = True,
     fallback_timestamp: Optional[int] = None,
 ) -> str:
-    """Return a human-readable summary for a single Allure report."""
+    """Return a human-readable summary for a single Allure report.
+
+    The summary starts with the report date, followed by one line per
+    status count and optional metadata such as team name, initiators and
+    jira links.
+    """
     info = extract_report_info(report, fallback_timestamp or 0)
 
     date_str = _format_date(info["timestamp"])
     sc = info["status_counts"]
-    status_line = ", ".join(_fmt_status(s, sc[s], color) for s in STATUS_ORDER)
+    # generate one line per status after the date line
+    status_lines = [_fmt_status(s, sc[s], color) for s in STATUS_ORDER]
 
-    lines = [
-        f"**{date_str}**: {status_line}"
-    ]
+    lines = [f"**{date_str}**:"]
+    lines.extend(status_lines)
 
     if info["team_name"]:
         lines.append(f"**\u041a\u043e\u043c\u0430\u043d\u0434\u0430**: {info['team_name']}")
