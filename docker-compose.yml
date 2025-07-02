@@ -8,12 +8,8 @@ services:
       - "5005:5005"
     volumes:
       - ./chunks:/app/chunks
-      - ./reports:/app/reports
-      - ./logs:/app/logs
-      - ./input:/app/input
-      - ./output:/app/output
-      - ./tmp :/app/tmp
       - ./embeddings:/app/embeddings
+      - pip_cache:/root/.cache/pip
     depends_on:
       - qdrant
       - ollama
@@ -28,7 +24,6 @@ services:
     image: qdrant/qdrant:latest
     ports:
       - "6334:6333"
-    # монтируем локальную папку qdrant_storage в контейнер
     volumes:
       - ./qdrant_storage:/qdrant/storage
     networks:
@@ -52,3 +47,6 @@ services:
 networks:
   allure_analyzer_network:
     name: allure_analyzer_network
+
+volumes:
+  pip_cache:
