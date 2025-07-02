@@ -88,7 +88,12 @@ def chunk_and_save_json(json_data, uuid, test_suite_name):
     return output_path, df
 
 
-def analyze_and_post(uuid: str, test_suite_name: str, report_data):
+def analyze_and_post(
+    uuid: str,
+    test_suite_name: str,
+    report_data,
+    question_override: str | None = None,
+):
     """
     Выполняет RAG-анализ и отправляет результат на Allure-сервер.
 
@@ -99,7 +104,7 @@ def analyze_and_post(uuid: str, test_suite_name: str, report_data):
     """
     # 1. Генерируем анализ
     try:
-        analysis_result = run_rag_analysis(test_suite_name)
+        analysis_result = run_rag_analysis(test_suite_name, question_override)
         analysis_text = analysis_result.get("analysis", "")
     except RagAnalysisError as e:
         logger.error("RAG analysis failed for %s: %s", uuid, e)
