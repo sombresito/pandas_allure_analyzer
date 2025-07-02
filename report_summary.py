@@ -10,6 +10,7 @@ HTML_COLORS = {
     "failed": "red",
     "broken": "orange",
     "skipped": "gray",
+    "total": "blue",
 }
 
 
@@ -131,6 +132,8 @@ def format_report_summary(
     sc = info["status_counts"]
     # generate one line per status after the date line
     status_lines = [_fmt_status(s, sc[s], color) for s in STATUS_ORDER]
+    total_tests = sum(sc.values())
+    status_lines.append(_fmt_status("total", total_tests, color))
 
     lines = [f"**{date_str}**:"]
     lines.extend(status_lines)
