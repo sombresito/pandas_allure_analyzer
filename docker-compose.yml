@@ -31,9 +31,6 @@ services:
     restart: unless-stopped
 
   ollama:
-    build:
-      context: ./ollama
-      dockerfile: Dockerfile
     image: zhumakom/ollama-mistral
     command: ["serve"]
     environment:
