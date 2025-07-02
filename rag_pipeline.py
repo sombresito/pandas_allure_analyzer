@@ -124,8 +124,17 @@ def generate_answer_with_ollama(chunks, question, ollama_url: str = OLLAMA_URL):
     return answer.strip()
 
 
-def run_rag_analysis(test_suite_name: str) -> dict:
-    """Generate a short analysis for a team's latest report using RAG."""
+def run_rag_analysis(test_suite_name: str, question_override: str | None = None) -> dict:
+    """Generate a short analysis for a team's latest report using RAG.
+
+    Parameters
+    ----------
+    test_suite_name: str
+        Team name used as filter when fetching chunks from Qdrant.
+    question_override: str | None, optional
+        Prompt to use instead of the default :data:`question`.  When ``None``
+        the globally configured prompt is used.
+    """
     client = get_client()
     search_filter = Filter(
         must=[FieldCondition(key="team", match=MatchValue(value=test_suite_name))]
@@ -142,7 +151,8 @@ def run_rag_analysis(test_suite_name: str) -> dict:
         raise RagAnalysisError("Qdrant unreachable or returned an error") from e
     chunks = [p.payload.get("rag_text", "") for p in points]
 
-    answer = generate_answer_with_ollama(chunks, question) if chunks else ""
+    q = question_override or question
+    answer = generate_answer_with_ollama(chunks, q) if chunks else ""
     return {"team": test_suite_name, "analysis": answer}
 
 
