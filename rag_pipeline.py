@@ -27,6 +27,12 @@ COLLECTION_NAME = "allure_chunks"
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434/api/generate")
 OLLAMA_MODEL = "mistral:latest"
 
+# Default analysis prompt can be overridden via the /prompt API
+question = (
+    "Проанализируй текущий отчёт (выводы, обратная связь, рекомендации), "
+    "а затем сравни с двумя предыдущими и укажи тренд."
+)
+
 
 # ==== Инициализация ====
 _MODEL = None
@@ -136,7 +142,6 @@ def run_rag_analysis(test_suite_name: str) -> dict:
         raise RagAnalysisError("Qdrant unreachable or returned an error") from e
     chunks = [p.payload.get("rag_text", "") for p in points]
 
-    question = "Проанализируй текущий отчёт (выводы, обратная связь, рекомендации), а затем сравни с двумя предыдущими и укажи тренд."
     answer = generate_answer_with_ollama(chunks, question) if chunks else ""
     return {"team": test_suite_name, "analysis": answer}
 
