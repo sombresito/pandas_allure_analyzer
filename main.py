@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 import requests
 import os
 import logging
+# The main application orchestrates processing of Allure reports
 from dotenv import load_dotenv
 import urllib3
 # Отключаем предупреждения InsecureRequestWarning
@@ -23,7 +24,20 @@ from utils import (
 )
 from embeddings import create_embeddings, load_chunks
 from save_embeddings_to_qdrant import upload_embeddings
+import rag_pipeline
 app = FastAPI()
+
+
+@app.post("/prompt")
+async def set_prompt(request: Request):
+    """Update the analysis question used by the RAG pipeline."""
+    body = await request.json()
+    prompt = body.get("prompt") or body.get("question")
+    if not prompt:
+        raise HTTPException(status_code=400, detail="Prompt not provided.")
+    rag_pipeline.question = str(prompt)
+    logger.info("Analysis prompt updated")
+    return {"result": "ok", "prompt": rag_pipeline.question}
 
 @app.post("/uuid/analyze")
 async def analyze_report(request: Request):
