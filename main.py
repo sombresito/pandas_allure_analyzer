@@ -164,7 +164,12 @@ async def analyze_report_with_prompt(request: Request):
         raise HTTPException(status_code=500, detail=f"Не удалось загрузить эмбеддинги: {e}") from e
 
     try:
-        analyze_and_post(uuid, test_suite_name, report_data, prompt)
+        analyze_and_post(
+            uuid,
+            test_suite_name,
+            report_data,
+            prompt_override=prompt,
+        )
     except Exception as e:
         logger.error("Не удалось выполнить анализ для %s: %s", uuid, e)
         return {"Результат": "частичный", "Ошибка": f"{str(e)}\nСорян, не могу перевести ошибку на русский. Попробуй Google Translate, если языки — не твоё."}
