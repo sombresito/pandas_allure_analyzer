@@ -126,9 +126,8 @@ async def analyze_report_with_prompt(request: Request):
         raise HTTPException(status_code=400, detail="UUID не был предоставлен.")
     if not prompt:
         raise HTTPException(status_code=400, detail="Промпт не был предоставлен.")
-    logger.info("Получен запрос анализа с промптом для UUID %", uuid)
+    logger.info("Получен запрос анализа с промптом для UUID %s", uuid)
     logger.info("Отправленный промпт: %s", prompt)
-    logger.info("Фактический промпт: %s", rag_pipeline.question)
 
     url = f"{ALLURE_API}/report/{uuid}/test-cases/aggregate"
     auth_kwargs = _auth_kwargs()

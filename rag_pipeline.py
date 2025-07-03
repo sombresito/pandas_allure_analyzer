@@ -90,6 +90,7 @@ def search_similar_chunks(query: str, top_k: int = 5):
 # ==== Генерация ответа через Ollama ====
 def generate_answer_with_ollama(chunks, question, ollama_url: str = OLLAMA_URL):
     context = "\n\n".join(chunks)
+    logger.info("Промпт который получает ИИ: %s", question)
     prompt = (
         f"Вот информация из отчёта:\n{context}\n\n" 
         f"Вопрос: {question}\n\n" 
@@ -152,6 +153,7 @@ def run_rag_analysis(test_suite_name: str, question_override: str | None = None)
     chunks = [p.payload.get("rag_text", "") for p in points]
 
     q = question_override or question
+    logger.info("Овверайд промпта: %s", q)
     answer = generate_answer_with_ollama(chunks, q) if chunks else ""
     return {"team": test_suite_name, "analysis": answer}
 
