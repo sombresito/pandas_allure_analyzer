@@ -54,7 +54,7 @@ async def analyze_report(request: Request):
     if not uuid:
         raise HTTPException(status_code=400, detail="UUID not provided.")
     logger.info("Получен запрос на анализ для UUID %s", uuid)
-    logger.info("Промпт: %s", rag_pipeline.question)
+    logger.info("Глобальный Промпт: %s", rag_pipeline.question)
 
     # 1. Получаем JSON отчёт
     url = f"{ALLURE_API}/report/{uuid}/test-cases/aggregate"
