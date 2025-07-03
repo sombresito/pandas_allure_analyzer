@@ -41,10 +41,10 @@ async def set_prompt(request: Request):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],            # or your front-end URL(s)
-    allow_methods=["*"],            # GET, POST, OPTIONS, etc.
-    allow_headers=["*"],            # any custom headers
-    allow_credentials=True,         # if you use cookies/auth
+    allow_origins=["*"],   
+    allow_methods=["*"],   
+    allow_headers=["*"],   
+    allow_credentials=True,
 )
 
 @app.post("/uuid/analyze")
