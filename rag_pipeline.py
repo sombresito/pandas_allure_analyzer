@@ -88,15 +88,23 @@ def search_similar_chunks(query: str, top_k: int = 5):
 
 
 # ==== Генерация ответа через Ollama ====
-def generate_answer_with_ollama(chunks, question, ollama_url: str = OLLAMA_URL):
+def generate_answer_with_ollama(
+    chunks,
+    question,
+    ollama_url: str = OLLAMA_URL,
+    prompt_override: str | None = None,
+):
     context = "\n\n".join(chunks)
-    prompt = (
-        f"Вот информация из отчёта:\n{context}\n\n" 
-        f"Вопрос: {question}\n\n" 
-        "1) Проанализируй **текущий** отчёт: выведи ключевые выводы и метрики, дай подробную обратную связь и рекомендации по улучшению следующих прогонов.\n" 
-        "2) Затем сравни этот отчёт с двумя предыдущими отчётами команды и определи тренд: деградация, улучшение или стабильность.\n\n" 
-        "Ответ структурируй по пунктам 1. Анализ текущего очтета: и 2. Сравнение с двумя предыдущими отчётами:, но не пиши цифры, названия пунктов сделай жирным, а текст — обычным." 
-    )
+    if prompt_override is not None:
+        prompt = f"Вот информация из отчёта:\n{context}\n\n{prompt_override}"
+    else:
+        prompt = (
+            f"Вот информация из отчёта:\n{context}\n\n"
+            f"Вопрос: {question}\n\n"
+            "1) Проанализируй **текущий** отчёт: выведи ключевые выводы и метрики, дай подробную обратную связь и рекомендации по улучшению следующих прогонов.\n"
+            "2) Затем сравни этот отчёт с двумя предыдущими отчётами команды и определи тренд: деградация, улучшение или стабильность.\n\n"
+            "Ответ структурируй по пунктам 1. Анализ текущего очтета: и 2. Сравнение с двумя предыдущими отчётами:, но не пиши цифры, названия пунктов сделай жирным, а текст — обычным."
+        )
     logger.info("Промпт который получает ИИ: %s", prompt)
     try:
         response = requests.post(
@@ -124,7 +132,11 @@ def generate_answer_with_ollama(chunks, question, ollama_url: str = OLLAMA_URL):
     return answer.strip()
 
 
-def run_rag_analysis(test_suite_name: str, question_override: str | None = None) -> dict:
+def run_rag_analysis(
+    test_suite_name: str,
+    question_override: str | None = None,
+    prompt_override: str | None = None,
+) -> dict:
     """Generate a short analysis for a team's latest report using RAG.
 
     Parameters
@@ -153,7 +165,11 @@ def run_rag_analysis(test_suite_name: str, question_override: str | None = None)
 
     q = question_override or question
     logger.info("Овверайд промпта: %s", q)
-    answer = generate_answer_with_ollama(chunks, q) if chunks else ""
+    answer = (
+        generate_answer_with_ollama(chunks, q, prompt_override=prompt_override)
+        if chunks
+        else ""
+    )
     return {"team": test_suite_name, "analysis": answer}
 
 
