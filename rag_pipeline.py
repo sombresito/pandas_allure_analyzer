@@ -90,7 +90,6 @@ def search_similar_chunks(query: str, top_k: int = 5):
 # ==== Генерация ответа через Ollama ====
 def generate_answer_with_ollama(chunks, question, ollama_url: str = OLLAMA_URL):
     context = "\n\n".join(chunks)
-    logger.info("Промпт который получает ИИ: %s", question)
     prompt = (
         f"Вот информация из отчёта:\n{context}\n\n" 
         f"Вопрос: {question}\n\n" 
@@ -98,7 +97,7 @@ def generate_answer_with_ollama(chunks, question, ollama_url: str = OLLAMA_URL):
         "2) Затем сравни этот отчёт с двумя предыдущими отчётами команды и определи тренд: деградация, улучшение или стабильность.\n\n" 
         "Ответ структурируй по пунктам 1. Анализ текущего очтета: и 2. Сравнение с двумя предыдущими отчётами:, но не пиши цифры, названия пунктов сделай жирным, а текст — обычным." 
     )
-    
+    logger.info("Промпт который получает ИИ: %s", prompt)
     try:
         response = requests.post(
             ollama_url,
