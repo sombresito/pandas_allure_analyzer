@@ -54,6 +54,7 @@ async def analyze_report(request: Request):
     if not uuid:
         raise HTTPException(status_code=400, detail="UUID not provided.")
     logger.info("Analyze request received for UUID %s", uuid)
+    logger.info("Question: %s", rag_pipeline.question)
 
     # 1. Получаем JSON отчёт
     url = f"{ALLURE_API}/report/{uuid}/test-cases/aggregate"
@@ -126,6 +127,7 @@ async def analyze_report_with_prompt(request: Request):
     if not prompt:
         raise HTTPException(status_code=400, detail="Prompt not provided.")
     logger.info("Analyze-with-prompt request received for UUID %s", uuid)
+    logger.info("Question: %s", prompt)
 
     url = f"{ALLURE_API}/report/{uuid}/test-cases/aggregate"
     auth_kwargs = _auth_kwargs()
