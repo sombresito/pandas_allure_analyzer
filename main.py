@@ -37,7 +37,7 @@ async def set_prompt(request: Request):
         raise HTTPException(status_code=400, detail="Prompt not provided.")
     rag_pipeline.question = str(prompt)
     logger.info("Analysis prompt updated")
-    return {"result": "ok", "prompt": rag_pipeline.question} """
+    return {"Результат": "ok", "prompt": rag_pipeline.question} """
 
 app.add_middleware(
     CORSMiddleware,
@@ -112,9 +112,9 @@ async def analyze_report(request: Request):
         logger.info("Анализ отправлен для %s", uuid)
     except Exception as e:
         logger.error("Не удалось выполнить анализ для %s: %s", uuid, e)
-        return {"result": "partial", "error": str(e)}
+        return {"Результат": "частичный", "Ошибка": str(e)}
 
-    return {"result": "ok", "team": test_suite_name}
+    return {"Результат": "ok", "Набор тестов": test_suite_name}
 
 @app.post("/prompt/analyze")
 async def analyze_report_with_prompt(request: Request):
@@ -168,6 +168,6 @@ async def analyze_report_with_prompt(request: Request):
         analyze_and_post(uuid, test_suite_name, report_data, prompt)
     except Exception as e:
         logger.error("Не удалось выполнить анализ для %s: %s", uuid, e)
-        return {"result": "partial", "error": str(e)}
+        return {"Результат": "частичный", "Ошибка": str(e)}
 
-    return {"result": "ok", "team": test_suite_name}
+    return {"Результат": "ok", "Набор тестов": test_suite_name}
