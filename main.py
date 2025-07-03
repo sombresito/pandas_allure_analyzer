@@ -112,7 +112,7 @@ async def analyze_report(request: Request):
         logger.info("Анализ отправлен для %s", uuid)
     except Exception as e:
         logger.error("Не удалось выполнить анализ для %s: %s", uuid, e)
-        return {"Результат": "частичный", "Ошибка": str(e)}
+        return {"Результат": "частичный", "Ошибка": f"{str(e)}\nСорян, не могу перевести ошибку на русский. Попробуй Google Translate, если языки — не твоё."}
 
     return {"Результат": "ok", "Набор тестов": test_suite_name}
 
@@ -168,6 +168,6 @@ async def analyze_report_with_prompt(request: Request):
         analyze_and_post(uuid, test_suite_name, report_data, prompt)
     except Exception as e:
         logger.error("Не удалось выполнить анализ для %s: %s", uuid, e)
-        return {"Результат": "частичный", "Ошибка": str(e)}
+        return {"Результат": "частичный", "Ошибка": f"{str(e)}\nСорян, не могу перевести ошибку на русский. Попробуй Google Translate, если языки — не твоё."}
 
     return {"Результат": "ok", "Набор тестов": test_suite_name}
