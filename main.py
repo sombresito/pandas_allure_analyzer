@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 import os
 import logging
@@ -28,16 +29,23 @@ import rag_pipeline
 app = FastAPI()
 
 
-@app.post("/prompt")
+""" @app.post("/prompt")
 async def set_prompt(request: Request):
-    """Update the analysis question used by the RAG pipeline."""
     body = await request.json()
     prompt = body.get("prompt") or body.get("question")
     if not prompt:
         raise HTTPException(status_code=400, detail="Prompt not provided.")
     rag_pipeline.question = str(prompt)
     logger.info("Analysis prompt updated")
-    return {"result": "ok", "prompt": rag_pipeline.question}
+    return {"result": "ok", "prompt": rag_pipeline.question} """
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],            # or your front-end URL(s)
+    allow_methods=["*"],            # GET, POST, OPTIONS, etc.
+    allow_headers=["*"],            # any custom headers
+    allow_credentials=True,         # if you use cookies/auth
+)
 
 @app.post("/uuid/analyze")
 async def analyze_report(request: Request):
@@ -106,7 +114,6 @@ async def analyze_report(request: Request):
         return {"result": "partial", "error": str(e)}
 
     return {"result": "ok", "team": test_suite_name}
-
 
 @app.post("/prompt/analyze")
 async def analyze_report_with_prompt(request: Request):
