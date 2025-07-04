@@ -145,5 +145,3 @@ def analyze_and_post(
         msg = f"Unexpected status {resp.status_code}: {resp.text}"
         logger.error("Failed to post analysis for %s: %s", uuid, msg)
         raise HTTPException(status_code=500, detail=msg)
-
-    logger.info("Analysis posted successfully for %s", uuid)

@@ -66,9 +66,6 @@ async def analyze_report(request: Request):
     except requests.RequestException as e:
         logger.error("Не удалось получить отчёт для %s: %s", uuid, e)
         raise HTTPException(status_code=500, detail=f"Не удалось получить отчёт: {e}") from e
-
-    print(resp.status_code)
-    print(repr(resp.text))
     
     try:
         report_data = resp.json()

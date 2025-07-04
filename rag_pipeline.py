@@ -170,6 +170,7 @@ def run_rag_analysis(
         if chunks
         else ""
     )
+    logger.info("Ответ ИИ: %s", answer)
     return {"team": test_suite_name, "analysis": answer}
 
 
